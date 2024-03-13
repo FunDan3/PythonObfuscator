@@ -1,10 +1,11 @@
 #! /usr/bin/python3
-import techniques
+import obfuscator
 import tqdm
 
 code = """
 print('''test
-for newlines''')
+for newlines
+and "" \"\" ''')
 """
-code = techniques.CodeSplit(code)
+code = obfuscator.obfuscate(code)
 print(code)

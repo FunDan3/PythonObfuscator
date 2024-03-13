@@ -2,6 +2,9 @@
 import techniques
 import tqdm
 
-code = "print('test')"
-code = techniques.base64(code)
+code = """
+print('''test
+for newlines''')
+"""
+code = techniques.CodeSplit(code)
 print(code)

@@ -1,1 +1,1 @@
-from main import obfuscate
+from .main import obfuscate

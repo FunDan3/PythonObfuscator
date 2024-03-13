@@ -1,18 +1,21 @@
 import random
-trash = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!#$%&()*+,-./:;<=>?@[]^_`{|}~ "
-def obfuscate(code, encrypt_function = None, decrypt_function = None):
-	trash_size = random.randint(16, 32)
-	if not encrypt_function:
-		encrypt_function = default_encrypt(trash_size) #not actual encryption but IDC
-	if not decrypt_function:
-		decrypt_function = f"%s[::-{trash_size}]"
-	code = scan_for_string(code, "'''", encrypt_function, decrypt_function)
-	code = scan_for_string(code, '"""', encrypt_function, decrypt_function)
-	code = scan_for_string(code, "'", encrypt_function, decrypt_function)
-	code = scan_for_string(code, '"', encrypt_function, decrypt_function)
+
+def encrypt_function(data, password):
+	new_data = ""
+	for i in range(len(data)):
+		addition = password.split(";")[i]
+		new_data += str(ord(data[i])+int(addition)) + (";" if not i == len(data)-1 else "")
+	return new_data
+decrypt_function = f"''.join([chr(int(i)-int(j)) for i, j in zip(%s.split(';'), %s.split(';'))])"
+
+def obfuscate(code):
+	code = scan_for_string(code, "'''")
+	code = scan_for_string(code, '"""')
+	code = scan_for_string(code, '"')
+	code = scan_for_string(code, "'")
 	return code
 
-def scan_for_string(code, quote, encrypt_function, decrypt_function): # really bad string parser tbh
+def scan_for_string(code, quote): # really bad string parser tbh
 	return_code = ""
 	string_content = ""
 	started = False
@@ -26,7 +29,7 @@ def scan_for_string(code, quote, encrypt_function, decrypt_function): # really b
 				string_content += code[i]
 			if quote_check:
 				if started:
-					return_code += on_string(string_content, quote, encrypt_function, decrypt_function)
+					return_code += on_string(string_content, quote)
 				started = not started
 		if len(quote) == 1:
 			quote_check = code[i] == quote and not (code[i-1] == quote or code[i+1] == quote)
@@ -37,19 +40,10 @@ def scan_for_string(code, quote, encrypt_function, decrypt_function): # really b
 				string_content += code[i]
 			if quote_check:
 				if started:
-					return_code += on_string(string_content, quote, encrypt_function, decrypt_function)
+					return_code += on_string(string_content, quote)
 				started = not started
 	return return_code
 
-def on_string(string_content, quote, encrypt_function, decrypt_function):
-	return decrypt_function % (quote + encrypt_function(string_content) + quote)
-
-def default_encrypt(size):
-	def encrypt(data):
-		new_data = ""
-		for chr in data:
-			new_data += chr
-			for _ in range(size-1):
-				new_data += random.choice(trash)
-		return new_data[::-1]
-	return encrypt
+def on_string(string_content, quote):
+	password = ";".join([str(random.randint(-99, 99)) for _ in range(len(string_content))])
+	return decrypt_function % ((quote + encrypt_function(string_content, password) + quote), '"' + password + '"')

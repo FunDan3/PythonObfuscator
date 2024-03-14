@@ -4,7 +4,9 @@ import obfuscator
 code = """
 print('''test
 for newlines
-and "" \"\" ''')
+and "" \"\" ''') #test
 """
 code = obfuscator.obfuscate(code)
-print(code)
+with open("test_result.py", "w") as f:
+	f.write("#!/usr/bin/python3\n")
+	f.write(code)

@@ -2,6 +2,7 @@ import base64
 import techniques
 
 def obfuscate(code):
+	code = techniques.decomment(code)
 	code = techniques.string_encrypt(code)
 	code = techniques.base64(code, decoder_function = "b64d(%s)")
 	code = """b64 = __import__('base64')

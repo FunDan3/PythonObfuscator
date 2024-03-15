@@ -3,10 +3,10 @@ import random
 def encrypt_function(data, password):
 	new_data = ""
 	for i in range(len(data)):
-		addition = password.split(";")[i]
-		new_data += str(ord(data[i])+int(addition)) + (";" if not i == len(data)-1 else "")
+		addition = password[i]
+		new_data += chr(ord(data[i])+ord(addition))
 	return new_data
-decrypt_function = f"''.join([chr(int(i)-int(j)) for i, j in zip(%s.split(';'), %s.split(';'))])"
+decrypt_function = f"''.join([chr(ord(i)-ord(j)) for i, j in zip(%s, %s)])"
 
 def obfuscate(code):
 	code = scan_for_string(code, "'")
@@ -61,5 +61,11 @@ def scan_for_string(code, quote): # really bad string parser tbh
 	return return_code
 
 def on_string(string_content, quote):
-	password = ";".join([str(random.randint(-99, 99)) for _ in range(len(string_content))])
+	password = ""
+	banned = ["\n", "\\", "'"]
+	for character in string_content:
+		addition = random.randint(ord(character), ord(character)+100)
+		while chr(addition) in banned or chr(ord(character)+addition) in banned:
+			addition += 1
+		password += chr(addition)
 	return decrypt_function % (("'" + encrypt_function(string_content, password) + "'"), "'" + password + "'")

@@ -20,6 +20,7 @@ def scan_for_string(code, quote): # really bad string parser tbh
 	string_content = ""
 	started = False
 	special_string = False
+	byte_string = False
 	for i in range(len(code)):
 		if len(quote) == 3:
 			quote_check = code[i:i+len(quote)] == quote
@@ -34,12 +35,15 @@ def scan_for_string(code, quote): # really bad string parser tbh
 			if quote_check:
 				if started:
 					if not special_string:
-						return_code += on_string(string_content, quote)
+						return_code += on_string(string_content, quote, byte_string)
 					else:
 						return_code += quote + string_content + quote
 					string_content = ""
 				else:
-					special_string = code[i-1] in ["f", "b"] # f-string or b-string
+					special_string = code[i-1] == "f" # f-string
+					byte_string = code[i-1] == "b" # b-string
+					if byte_string:
+						return_code = return_code[:len(return_code)-1]
 				started = not started
 		if len(quote) == 1:
 			quote_check = code[i] == quote and not (code[i-1] == quote or code[i+1] == quote)
@@ -51,16 +55,24 @@ def scan_for_string(code, quote): # really bad string parser tbh
 			if quote_check:
 				if started:
 					if not special_string:
-						return_code += on_string(string_content, quote)
+						return_code += on_string(string_content, quote, byte_string)
 					else:
 						return_code += quote + string_content + quote
 					string_content = ""
 				else:
-					special_string = code[i-1] in ["f", "b"] # f-string or b-string
+					special_string = code[i-1] == "f" # f-string
+					byte_string = code[i-1] == "b" # b-string
+					if byte_string:
+						return_code = return_code[:len(return_code)-1]
+
 				started = not started
 	return return_code
 
-def on_string(string_content, quote):
+def on_string(string_content, quote, byte_string):
+	type_processor = "%s"
+	if byte_string:
+		string_content = f"b{quote}{string_content}{quote}"
+		type_processor = "eval(%s)"
 	password = ""
 	banned = ["\n", "\\", "'"]
 	for character in string_content:
@@ -68,4 +80,4 @@ def on_string(string_content, quote):
 		while chr(addition) in banned or chr(ord(character)+addition) in banned:
 			addition += 1
 		password += chr(addition)
-	return decrypt_function % (("'" + encrypt_function(string_content, password) + "'"), "'" + password + "'")
+	return type_processor % decrypt_function % (("'" + encrypt_function(string_content, password) + "'"), "'" + password + "'")

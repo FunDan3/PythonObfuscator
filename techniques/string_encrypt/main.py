@@ -19,6 +19,7 @@ def scan_for_string(code, quote): # really bad string parser tbh
 	return_code = ""
 	string_content = ""
 	started = False
+	special_string = False
 	for i in range(len(code)):
 		if len(quote) == 3:
 			quote_check = code[i:i+len(quote)] == quote
@@ -29,7 +30,12 @@ def scan_for_string(code, quote): # really bad string parser tbh
 				string_content += code[i]
 			if quote_check:
 				if started:
-					return_code += on_string(string_content, quote)
+					if not special_string:
+						return_code += on_string(string_content, quote)
+					else:
+						return_code += quote + string_content + quote
+				else:
+					special_string = code[i-1] in ["f", "b"] # f-string or b-string
 				started = not started
 		if len(quote) == 1:
 			quote_check = code[i] == quote and not (code[i-1] == quote or code[i+1] == quote)
@@ -40,7 +46,12 @@ def scan_for_string(code, quote): # really bad string parser tbh
 				string_content += code[i]
 			if quote_check:
 				if started:
-					return_code += on_string(string_content, quote)
+					if not special_string:
+						return_code += on_string(string_content, quote)
+					else:
+						return_code += quote + string_content + quote
+				else:
+					special_string = code[i-1] in ["f", "b"] # f-string or b-string
 				started = not started
 	return return_code
 

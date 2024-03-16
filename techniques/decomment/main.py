@@ -1,7 +1,7 @@
 def obfuscate(code):
 	code = singleline(code)
-	#code = scan_for_string(code, "'''")
-	#code = scan_for_string(code, '"""')
+	code = multiline(code, "'''")
+	code = multiline(code, '"""')
 	return code
 
 def singleline(code): #got to figure out a way how to decomment multine strings. Probably will look for characters like =; ( before it. Will need to remove whitespace first...
@@ -28,29 +28,35 @@ def singleline(code): #got to figure out a way how to decomment multine strings.
 def multiline(code, quote): #BROKEN YET
 	return_code = ""
 	string_content = ""
+	string_start = 0
 	started = False
-	special_string = False
-	byte_string = False
 	for i in range(len(code)):
-		if len(quote) == 3:
-			quote_check = code[i:i+len(quote)] == quote
-			in_tripple_quote = code[i] == quote[0] and (
-				(code[i-1] == quote[0] and code[i-2] == quote[0]) or
-				(code[i+1] == quote[0] and code[i+2] == quote[0]) or
-				(code[i-1] == quote[0] and code[i+1] == quote[0]))
-			if not started and not in_tripple_quote:
-				return_code += code[i]
-			if started and not in_tripple_quote:
-				string_content += code[i]
-			if quote_check:
-				if started:
-					if not special_string:
-						return_code += on_string(string_content, quote, byte_string)
+		quote_check = code[i:i+len(quote)] == quote
+		in_tripple_quote = code[i] == quote[0] and (
+			(code[i-1] == quote[0] and code[i-2] == quote[0]) or
+			(code[i+1] == quote[0] and code[i+2] == quote[0]) or
+			(code[i-1] == quote[0] and code[i+1] == quote[0]))
+		if not started and not in_tripple_quote:
+			return_code += code[i]
+		if started and not in_tripple_quote:
+			string_content += code[i]
+		if quote_check:
+			if started:
+				for j in range(string_start):
+					character = code[string_start-j-1]
+					if character in " \t\n":
+						continue
+
+					if character in "[,=(":
+						comment = False
+						break
 					else:
-						return_code += quote + string_content + quote
-					string_content = ""
-				else:
-					if byte_string:
-						return_code = return_code[:len(return_code)-1]
-				started = not started
+						comment = True
+						break
+				if not comment:
+					return_code += quote + string_content + quote
+			else:
+				string_content = ""
+				string_start = i
+			started = not started
 	return return_code

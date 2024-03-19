@@ -42,6 +42,7 @@ def multiline(code, quote): #BROKEN YET
 			string_content += code[i]
 		if quote_check:
 			if started:
+				comment = True
 				for j in range(string_start):
 					character = code[string_start-j-1]
 					if character in " \t\n":

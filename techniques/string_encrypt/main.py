@@ -26,8 +26,8 @@ def scan_for_string(code, quote): # really bad string parser tbh
 			quote_check = code[i:i+len(quote)] == quote
 			in_tripple_quote = code[i] == quote[0] and (
 				(i in range(1, len(code)-2) and code[i-1] == quote[0] and code[i-2] == quote[0]) or
-				(i in range(2, len(code)-1) and code[i+1] == quote[0] and code[i+2] == quote[0]) or
-				(i in range(1, len(code)-2) and code[i-1] == quote[0] and code[i+1] == quote[0]))
+				(i in range(1, len(code)-2) and code[i+1] == quote[0] and code[i+2] == quote[0]) or
+				(i in range(1, len(code)-1) and code[i-1] == quote[0] and code[i+1] == quote[0]))
 			if not started and not in_tripple_quote:
 				return_code += code[i]
 			if started and not in_tripple_quote:

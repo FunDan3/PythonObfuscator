@@ -87,8 +87,8 @@ def on_string(string_content, quote, byte_string, f_string):
 		new_string_content = new_string_content.replace("{}", "%s")
 		real_arguments = "("
 		for i in range(len(arguments)):
-			obfuscated_argument = arguments[i] #obfuscate(f"'{arguments[i]}'")
-			real_arguments += f"{obfuscated_argument}"
+			obfuscated_argument = obfuscate(f"'{arguments[i]}'")
+			real_arguments += f"eval({obfuscated_argument})"
 			if i != len(arguments)-1:
 				real_arguments += ","
 		real_arguments += ")"

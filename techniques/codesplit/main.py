@@ -1,5 +1,10 @@
 def obfuscate(code):
-	idents = calc_idents(code)
+	idents = normalize_idents(calc_idents(code))
+
+def normalize_idents(idents):
+        minimal_ident = min([ident if ident else 2**32 for ident in idents]) #get minimal element except the '0'
+        normalized_idents = [int(ident / minimal_ident) for ident in idents]
+        return normalized_idents
 
 def calc_idents(code):
 	lines = code.split("\n")

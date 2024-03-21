@@ -7,7 +7,7 @@ def obfuscate(code):
 		if idents[line_number]:
 			code_segment += line
 		else:
-			if
+			pass
 
 def deident(code, depth = -1):
 	lines = code.split("\n")

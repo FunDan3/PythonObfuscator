@@ -5,7 +5,7 @@ with open("README.md", "r") as f:
 
 setuptools.setup(
 	name = "YAPythonObfuscator",
-	version = "0.0.1",
+	version = "0.0.4",
 	author = "Fun_Dan3",
 	author_email = "dfr34560@gmail.com",
 	description = "Yet another python obfuscator",

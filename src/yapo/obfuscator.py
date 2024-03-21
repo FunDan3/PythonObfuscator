@@ -1,4 +1,4 @@
-import techniques
+from . import techniques
 
 def obfuscate(code):
 	code = techniques.decomment(code)
